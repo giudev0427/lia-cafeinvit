@@ -1261,6 +1261,10 @@ body.is-live .reveal {
      por eso lo preparo al empezar (el toque/click que abre la invitación). */
   function unlockAudio() {
     try {
+      // Solo creamos el contexto si hay una interacción real del usuario:
+      // si no, el navegador lo bloquea y además avisa en la consola.
+      var act = navigator.userActivation;
+      if (act && act.isActive === false) return;
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       if (!audioCtx) audioCtx = new AC();
