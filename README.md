@@ -48,10 +48,10 @@ se abren en su propio programa de correo ya rellenado (ver
 ## 📬 Cómo recibes las respuestas
 
 No hay servidor: cuando Lia elige el día y la hora aparece un botón
-**"✉️ Enviar mi respuesta"** que abre su programa de correo con un mensaje ya escrito.
+**"✉️ Enviar mi respuesta"** que abre su programa de correo con un mensaje ya escrito a `tcgiussepe@gmail.com`.
 
 ```
-mailto:giudev0427@gmail.com?subject=☕ ¡He aceptado el café!&body=...
+mailto:tcgiussepe@gmail.com?subject=☕ ¡He aceptado el café!&body=...
 ```
 
 El enlace se reconstruye cada vez que cambia la fecha o la hora, así que también
@@ -154,7 +154,7 @@ Proyecto creado por:
 
 Contacto:
 
-**giudev0427@gmail.com**
+**tcgiussepe@gmail.com**
 
 ---
 
