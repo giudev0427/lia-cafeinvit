@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Para Lia — una pequeña invitación interactiva para compartir una tarde tomando café.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<title>Para Lia ☕</title>
+
+<style>
+/* ============================================================
+   0. VARIABLES Y BASE
+   ============================================================ */
+:root {
+  color-scheme: dark;
+  --black:   #000000;
+  --coffee:  #6b3e26;
+  --gold:    #f3c98f;
+  --amber:   #e69c57;
+  --cream:   #fff4e4;
+  --violet:  #2a1b36;
+  --rose:    #e2758a;
+}
+
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--cream);
+  background: var(--black);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   1. PANTALLA DE INICIO CINEMATOGRÁFICA
+   ============================================================ */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--black);
+  cursor: pointer;
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  transition: opacity 1s ease, transform 1s ease, filter 1s ease;
+}
+.splash:focus { outline: none; }
+.splash:focus-visible .splash__cta {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+/* cielo estrellado de la pantalla de inicio */
+.splash__sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 46%, rgba(107, 62, 38, .32), transparent 70%),
+    radial-gradient(ellipse 70% 55% at 18% 78%, rgba(42, 27, 54, .85), transparent 72%),
+    radial-gradient(ellipse 60% 50% at 84% 20%, rgba(38, 59, 92, .30), transparent 72%),
+    radial-gradient(ellipse 45% 40% at 50% 12%, rgba(23, 17, 30, .9), transparent 70%),
+    var(--black);
+}
+.splash__sky::before,
+.splash__sky::after {
+  position: absolute;
+  inset: -10%;
+  content: "";
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.4px 1.4px at  8% 22%, rgba(255, 244, 228, .9)  50%, transparent 100%),
+    radial-gradient(1px   1px   at 26% 62%, rgba(243, 201, 143, .8)  50%, transparent 100%),
+    radial-gradient(1.6px 1.6px at 42% 14%, rgba(255, 244, 228, .75) 50%, transparent 100%),
+    radial-gradient(1px   1px   at 58% 74%, rgba(255, 244, 228, .7)  50%, transparent 100%),
+    radial-gradient(1.3px 1.3px at 71% 36%, rgba(243, 201, 143, .75) 50%, transparent 100%),
+    radial-gradient(1px   1px   at 86% 68%, rgba(255, 244, 228, .8)  50%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 94% 26%, rgba(255, 244, 228, .7)  50%, transparent 100%),
+    radial-gradient(1px   1px   at 14% 88%, rgba(255, 244, 228, .65) 50%, transparent 100%);
+  background-size: 240px 220px;
+  opacity: .75;
+  animation: skyDrift 40s linear infinite;
+}
+.splash__sky::after {
+  background-size: 330px 300px;
+  opacity: .45;
+  animation-duration: 68s;
+  animation-direction: reverse;
+}
+@keyframes skyDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-40px, -70px, 0); }
+}
+
+/* taza de la pantalla de inicio (CSS puro) */
+.splash__cup {
+  position: relative;
+  width: clamp(150px, 46vw, 210px);
+  aspect-ratio: 1 / 1;
+  flex: 0 0 auto;
+  transition: transform .8s cubic-bezier(.22, .8, .28, 1), filter .8s ease;
+  will-change: transform;
+}
+.splash__float {
+  position: absolute;
+  inset: 0;
+  animation: cupFloat 5.2s ease-in-out infinite;
+}
+.cup__halo {
+  position: absolute;
+  inset: -34%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 244, 228, .34) 0%,
+    rgba(243, 201, 143, .26) 26%,
+    rgba(230, 156, 87, .12) 50%,
+    rgba(230, 156, 87, 0)   72%);
+  filter: blur(2px);
+  animation: haloPulse 4.4s ease-in-out infinite;
+}
+@keyframes haloPulse {
+  0%, 100% { transform: scale(1);    opacity: .85; }
+  50%      { transform: scale(1.13); opacity: 1;   }
+}
+.cup__glow {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: 118%;
+  height: 26%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(230, 156, 87, .45), rgba(230, 156, 87, 0) 70%);
+  filter: blur(6px);
+}
+.cup__body {
+  position: absolute;
+  left: 50%;
+  bottom: 17%;
+  width: 62%;
+  height: 52%;
+  transform: translateX(-50%);
+  border-radius: 8% 8% 42% 42% / 6% 6% 26% 26%;
+  background: linear-gradient(170deg, #fff8ee 0%, #f0d3ae 42%, #d9ab7c 78%, #b8834f 100%);
+  box-shadow:
+    inset 0 -14px 26px rgba(107, 62, 38, .38),
+    inset 0 6px 14px rgba(255, 255, 255, .5),
+    0 24px 46px rgba(230, 156, 87, .3);
+}
+.cup__coffee {
+  position: absolute;
+  top: -5%;
+  left: 4%;
+  width: 92%;
+  height: 22%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #6b3e26, #3a2015);
+  box-shadow: inset 0 3px 8px rgba(255, 214, 160, .35);
+}
+.cup__handle {
+  position: absolute;
+  right: 12%;
+  bottom: 30%;
+  width: 27%;
+  height: 34%;
+  border: 8px solid #e7c9a3;
+  border-left-color: transparent;
+  border-radius: 50%;
+  filter: drop-shadow(0 6px 12px rgba(230, 156, 87, .3));
+}
+.cup__steam {
+  position: absolute;
+  left: 50%;
+  bottom: 66%;
+  width: 52%;
+  height: 30%;
+  transform: translateX(-50%);
+}
+.cup__steam span {
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 34px;
+  border: 2.5px solid rgba(255, 244, 228, .6);
+  border-right-color: transparent;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: steam 3.4s ease-in-out infinite;
+}
+.cup__steam span:nth-child(1) { left: 12%; animation-delay: 0s;   }
+.cup__steam span:nth-child(2) { left: 42%; animation-delay: .55s; height: 44px; }
+.cup__steam span:nth-child(3) { left: 70%; animation-delay: 1.15s; }
+@keyframes steam {
+  0%   { opacity: 0;   transform: translateY(10px) scale(.8);  }
+  25%  { opacity: .85; }
+  60%  { opacity: .55; }
+  100% { opacity: 0;   transform: translateY(-30px) scale(1.25) translateX(6px); }
+}
+@keyframes cupFloat {
+  0%, 100% { transform: translateY(0)     rotate(-2.5deg); }
+  50%      { transform: translateY(-14px) rotate(2.5deg);  }
+}
+
+.splash__cta {
+  flex: 0 0 auto;
+  margin: 1.9rem 0 0;
+  color: var(--cream);
+  font-size: clamp(.86rem, 3.4vw, 1.02rem);
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(243, 201, 143, .55);
+  animation: breathe 3.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: .55; letter-spacing: .3em;  text-shadow: 0 0 12px rgba(243, 201, 143, .3); }
+  50%      { opacity: 1;   letter-spacing: .33em; text-shadow: 0 0 28px rgba(243, 201, 143, .75); }
+}
+.splash__burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, .95) 0%,
+    rgba(255, 244, 228, .7) 22%,
+    rgba(243, 201, 143, .38) 45%,
+    rgba(230, 156, 87, 0)   72%);
+  pointer-events: none;
+}
+.splash.is-glow  .splash__cup { transform: scale(1.16); filter: brightness(1.32) saturate(1.1); }
+.splash.is-glow  .cup__halo    { opacity: 1; }
+.splash.is-burst .splash__burst { animation: burst .95s cubic-bezier(.16, .7, .24, 1) forwards; }
+.splash.is-leaving { opacity: 0; transform: scale(1.07); filter: blur(7px); pointer-events: none; }
+@keyframes burst {
+  0%   { opacity: .95; transform: translate(-50%, -50%) scale(0);   }
+  100% { opacity: 0;   transform: translate(-50%, -50%) scale(260); }
+}
+
+/* ============================================================
+   2. ESCENA ESPACIAL (CANVAS + FLOTANTES)
+   ============================================================ */
+.space-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--black);
+}
+.orbits {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.orb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: max-content;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.orb > span { display: block; transform: translate(-50%, -50%); }
+
+.orb--phrase > span {
+  color: var(--cream);
+  font-size: clamp(.66rem, 2.1vw, .8rem);
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-shadow: 0 0 22px rgba(243, 201, 143, .5), 0 0 6px rgba(0, 0, 0, .85);
+}
+.orb--glyph > span {
+  font-size: clamp(1.1rem, 3.4vw, 1.5rem);
+  line-height: 1;
+  filter: drop-shadow(0 0 14px rgba(230, 156, 87, .55));
+}
+.orb--cup > span {
+  font-size: clamp(1.3rem, 3.9vw, 1.8rem);
+  filter:
+    drop-shadow(0 0 14px rgba(230, 156, 87, .5))
+    drop-shadow(0 6px 14px rgba(0, 0, 0, .45));
+}
+/* fotos de café que flotan en el fondo */
+.orb--photo {
+  width: clamp(74px, 11vw, 124px);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid rgba(255, 226, 190, .22);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .55), 0 0 22px rgba(230, 156, 87, .18);
+}
+.orb--photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================================================
+   3. CONTENIDO
+   ============================================================ */
+.page {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1.6rem, 6vw, 4rem) 1rem clamp(2.5rem, 8vw, 5rem);
+}
+.wrap {
+  width: min(100%, 940px);
+  margin: 0 auto;
+}
+.wrap--narrow { width: min(100%, 560px); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .5rem .95rem;
+  color: var(--gold);
+  border: 1px solid rgba(243, 201, 143, .24);
+  border-radius: 999px;
+  background: rgba(243, 201, 143, .07);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+}
+
+/* ---- invitación principal ---- */
+.hero {
+  padding: clamp(1rem, 5vw, 3rem) 0 clamp(1.6rem, 5vw, 3rem);
+  text-align: center;
+}
+.hero__photo {
+  width: min(100%, 460px);
+  margin: 0 auto clamp(1.6rem, 5vw, 2.6rem);
+  overflow: hidden;
+  border: 1px solid rgba(255, 226, 190, .2);
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6), 0 0 60px rgba(230, 156, 87, .18);
+  opacity: 0;
+  transform: translateY(24px) scale(.97);
+}
+body.is-live .hero__photo { animation: appear 1s cubic-bezier(.2, .8, .24, 1) .1s both; }
+.hero__photo img {
+  display: block;
+  width: 100%;
+  height: clamp(200px, 34vw, 290px);
+  object-fit: cover;
+  transform: scale(1.04);
+}
+.hero h1 {
+  margin: 0 0 .4rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.9rem, 7.4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -.04em;
+  text-shadow: 0 0 34px rgba(243, 201, 143, .28);
+}
+.hero h1 span { color: #f1bd7e; font-style: italic; }
+.hero__lead {
+  margin: 0 0 1.3rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.5rem, 6.2vw, 2.5rem);
+  font-style: italic;
+  line-height: 1.22;
+  letter-spacing: -.02em;
+  background: linear-gradient(100deg, #fff4e4, #f3c98f 42%, #e69c57 78%, #fff4e4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(243, 201, 143, .22);
+}
+.hero__text {
+  max-width: 42ch;
+  margin: 0 auto 1rem;
+  color: #d9cdd8;
+  font-size: clamp(.94rem, 3.4vw, 1.02rem);
+  line-height: 1.8;
+}
+.hero__hint {
+  color: var(--gold);
+  font-size: clamp(.88rem, 3.2vw, .98rem);
+  font-style: italic;
+  opacity: .9;
+}
+
+/* ---- tarjeta glassmorphism con la pregunta ---- */
+.card {
+  position: relative;
+  padding: clamp(1.7rem, 6vw, 3rem) clamp(1.2rem, 5vw, 2.6rem);
+  text-align: center;
+  border: 1px solid rgba(255, 226, 190, .2);
+  border-radius: 2rem;
+  background: linear-gradient(150deg, rgba(45, 31, 52, .74), rgba(14, 12, 22, .88));
+  box-shadow:
+    0 34px 110px rgba(0, 0, 0, .6),
+    0 0 0 1px rgba(243, 201, 143, .06),
+    inset 0 1px rgba(255, 255, 255, .09);
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+}
+.card::before {
+  position: absolute;
+  top: -110px;
+  left: 50%;
+  width: 260px;
+  height: 190px;
+  content: "";
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(230, 156, 87, .16);
+  filter: blur(46px);
+  pointer-events: none;
+}
+.card__stack { display: grid; }
+.card__stack > .panel { grid-area: 1 / 1; }
+.panel {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(.98);
+  transition: opacity .5s ease, transform .5s cubic-bezier(.2, .8, .24, 1), visibility .5s;
+}
+.panel.is-active { opacity: 1; visibility: visible; transform: none; }
+
+.panel__q {
+  margin: 1.1rem 0 .4rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.3rem, 5vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.28;
+}
+.panel__sub {
+  margin: 0 0 1.6rem;
+  color: #cbbcd0;
+  font-size: clamp(.92rem, 3.3vw, 1rem);
+  font-style: italic;
+}
+
+/* ---- botones ---- */
+.btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+  justify-content: center;
+  align-items: center;
+  /* área segura de juego del botón NO */
+  padding: .6rem;
+}
+.btn {
+  position: relative;
+  min-height: 52px;
+  padding: .85rem 1.7rem;
+  color: var(--cream);
+  font-family: inherit;
+  font-size: clamp(.94rem, 3.4vw, 1.02rem);
+  font-weight: 600;
+  letter-spacing: .02em;
+  cursor: pointer;
+  border: 1px solid rgba(255, 226, 190, .22);
+  border-radius: 999px;
+  background: rgba(255, 244, 228, .06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .4);
+  transition: transform .28s cubic-bezier(.22, .8, .28, 1), box-shadow .28s ease,
+              background .28s ease, border-color .28s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.btn--yes {
+  color: #2b1409;
+  border-color: rgba(243, 201, 143, .55);
+  background: linear-gradient(120deg, #f3c98f, #e69c57);
+  box-shadow: 0 14px 34px rgba(230, 156, 87, .35);
+}
+.btn--yes:hover { box-shadow: 0 18px 44px rgba(230, 156, 87, .5); }
+.btn--ghost { background: rgba(255, 244, 228, .04); }
+.btn--soft   { min-height: 46px; padding: .7rem 1.3rem; font-size: .9rem; font-weight: 500; }
+
+/* el botón NO se mueve dentro de esta caja */
+.dodge {
+  position: relative;
+  display: inline-flex;
+  padding: .35rem;
+  border-radius: 999px;
+}
+.dodge .btn { transition: transform .38s cubic-bezier(.34, 1.56, .64, 1); }
+.note {
+  display: block;
+  min-height: 1em;
+  margin-top: .55rem;
+  color: #a99bb0;
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+
+/* ---- sección de café ---- */
+.section { margin-top: clamp(2.6rem, 9vw, 5rem); }
+.section__title {
+  margin: 0 0 .4rem;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.4rem, 5.4vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+.section__sub {
+  margin: 0 0 1.7rem;
+  color: #bfaec4;
+  font-size: .9rem;
+  font-style: italic;
+  text-align: center;
+}
+.grid {
+  display: grid;
+  gap: clamp(.8rem, 2.5vw, 1.2rem);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.tile {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 226, 190, .16);
+  border-radius: 20px;
+  background: linear-gradient(160deg, rgba(45, 31, 52, .6), rgba(12, 10, 18, .8));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
+  opacity: 0;
+  transform: translateY(26px) scale(.97);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .24, 1), box-shadow .4s ease;
+}
+.tile.is-in { opacity: 1; transform: none; }
+.tile:hover { box-shadow: 0 24px 56px rgba(0, 0, 0, .6), 0 0 30px rgba(230, 156, 87, .18); }
+.tile__img {
+  display: block;
+  width: 100%;
+  height: 148px;
+  object-fit: cover;
+}
+.tile__body { padding: .85rem 1rem 1.05rem; }
+.tile__body p {
+  margin: 0;
+  color: var(--gold);
+  font-size: .86rem;
+  letter-spacing: .06em;
+}
+.tile__body small {
+  display: block;
+  margin-top: .3rem;
+  color: #b6a8bc;
+  font-size: .74rem;
+}
+
+/* ---- fecha y hora ---- */
+.when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  min-width: 158px;
+  padding: .7rem .9rem;
+  text-align: left;
+  border: 1px solid rgba(255, 226, 190, .18);
+  border-radius: 14px;
+  background: rgba(8, 7, 12, .5);
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+.field:focus-within {
+  border-color: rgba(243, 201, 143, .55);
+  box-shadow: 0 0 0 3px rgba(243, 201, 143, .12);
+}
+.field span {
+  color: #bfaec4;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.field input {
+  min-height: 34px;
+  color: var(--cream);
+  font-family: inherit;
+  font-size: .98rem;
+  border: 0;
+  background: transparent;
+  color-scheme: dark;
+}
+.field input:focus { outline: none; }
+.field::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .75; }
+
+.resumen {
+  margin: 1.5rem 0 0;
+  padding: 1.1rem 1.2rem;
+  color: #f6e6d2;
+  font-size: .96rem;
+  line-height: 1.75;
+  text-align: left;
+  border: 1px solid rgba(243, 201, 143, .3);
+  border-radius: 16px;
+  background: rgba(243, 201, 143, .07);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .07);
+}
+.resumen strong { color: var(--gold); font-weight: 600; }
+
+/* ---- reproductor de Spotify ---- */
+.player { padding: clamp(1rem, 4vw, 1.6rem); text-align: center; }
+.spotify {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: 1rem auto 0;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .5);
+  opacity: .42;
+  transition: opacity .5s ease;
+}
+.spotify.is-ready { opacity: 1; }
+.spotify iframe { display: block; width: 100%; border: 0; }
+
+/* ---- frases flotantes ---- */
+.whispers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+  margin-top: clamp(2.2rem, 7vw, 3.6rem);
+}
+.whisper {
+  padding: .4rem .85rem;
+  color: #cbbcd0;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  border: 1px solid rgba(255, 226, 190, .12);
+  border-radius: 999px;
+  background: rgba(255, 244, 228, .03);
+}
+
+/* ---- pie ---- */
+.foot {
+  margin-top: clamp(2.4rem, 8vw, 4rem);
+  color: #7e7285;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.foot a { color: #a293ab; text-decoration: none; border-bottom: 1px solid rgba(243, 201, 143, .3); }
+
+/* ---- animación de entrada de los bloques ---- */
+.reveal { opacity: 0; transform: translateY(26px); }
+body.is-live .reveal {
+  animation: appear .9s cubic-bezier(.2, .8, .24, 1) both;
+  animation-delay: var(--d, .1s);
+}
+@keyframes appear {
+  from { opacity: 0; transform: translateY(26px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1);   }
+}
+
+/* ============================================================
+   4. RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .card { border-radius: 1.7rem; }
+  .grid  { grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); }
+}
+@media (max-width: 640px) {
+  .page { padding: 1.2rem .8rem 2.4rem; }
+  .card { padding: 1.6rem 1.05rem; border-radius: 1.5rem; }
+  .hero__photo img { height: 190px; }
+  .btns { gap: .6rem; }
+  .btn  { min-height: 50px; padding: .8rem 1.35rem; }
+  .dodge { padding: .25rem; }
+  .tile__img { height: 124px; }
+  .field { min-width: 100%; }
+  .whisper { font-size: .68rem; padding: .35rem .7rem; }
+}
+@media (max-width: 380px) {
+  .orb--cup > span { font-size: 1.1rem; }
+  .orb--photo       { width: 70px; }
+  .btn { padding: .75rem 1.05rem; }
+}
+
+/* ============================================================
+   5. MOVIMIENTO REDUCIDO
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .28s !important;
+    scroll-behavior: auto !important;
+  }
+  .splash.is-burst .splash__burst { animation: none; opacity: 0; }
+  .reveal, .panel, .hero__photo { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     PANTALLA DE INICIO
+     ============================================================ -->
+<div id="splash" class="splash" role="button" tabindex="0" aria-label="Toca para comenzar la invitación">
+  <div class="splash__sky" aria-hidden="true"></div>
+
+  <div class="splash__cup" aria-hidden="true">
+    <div class="splash__float">
+      <div class="cup__halo"></div>
+      <div class="cup__steam"><span></span><span></span><span></span></div>
+      <div class="cup__body"><div class="cup__coffee"></div></div>
+      <div class="cup__handle"></div>
+      <div class="cup__glow"></div>
+    </div>
+  </div>
+
+  <p class="splash__cta" aria-hidden="true">Toca para comenzar</p>
+  <div class="splash__burst" aria-hidden="true"></div>
+</div>
+
+<!-- ============================================================
+     ESCENA ESPACIAL DE FONDO
+     ============================================================ -->
+<canvas id="space" class="space-canvas" aria-hidden="true"></canvas>
+<div id="orbits" class="orbits" aria-hidden="true"></div>
+
+<!-- ============================================================
+     CONTENIDO
+     ============================================================ -->
+<main class="page">
+
+  <!-- ---- INVITACIÓN PRINCIPAL ---- -->
+  <header class="hero wrap">
+    <div class="hero__photo">
+      <img id="heroImg" alt="Taza de café con arte de latte" loading="eager" decoding="async">
+    </div>
+
+    <p class="eyebrow reveal" style="--d:.05s"><span aria-hidden="true">✦</span> Una invitación</p>
+
+    <h1 class="reveal" style="--d:.15s">Para <span>Lia</span> ☕</h1>
+    <p class="hero__lead reveal" style="--d:.25s">¿Vamos por un café?</p>
+
+    <p class="hero__text reveal" style="--d:.35s">
+      Hay cosas que se disfrutan más cuando se comparten...<br>
+      y creo que una tarde tomando café contigo sería una de ellas.
+    </p>
+    <p class="hero__text hero__hint reveal" style="--d:.45s">Así que quería hacerte una pregunta...</p>
+  </header>
+
+  <!-- ---- PREGUNTA + FLUJO DE LOS BOTONES ---- -->
+  <section class="wrap--narrow" style="margin:0 auto" aria-label="La pregunta">
+    <div class="card reveal" style="--d:.55s" id="card">
+
+      <div class="card__stack">
+
+        <!-- PANEL 1: la pregunta -->
+        <div class="panel is-active" data-panel="pregunta">
+          <p class="eyebrow"><span aria-hidden="true">💜</span> La pregunta</p>
+          <h2 class="panel__q">Lia, ¿aceptas ir a tomar un café conmigo? ☕❤️</h2>
+          <p class="panel__sub">Sin compromiso. Solo café. Y buena compañía.</p>
+
+          <div class="btns">
+            <button type="button" class="btn btn--yes" id="btnYes">❤️ SÍ</button>
+            <span class="dodge" id="dodge">
+              <button type="button" class="btn btn--ghost" id="btnNo">🙈 NO</button>
+            </span>
+          </div>
+          <span class="note" id="notaNo" aria-live="polite"></span>
+        </div>
+
+        <!-- PANEL 2: confirmación del sí -->
+        <div class="panel" data-panel="dice-si">
+          <p class="eyebrow"><span aria-hidden="true">☕</span> Almosto</p>
+          <h2 class="panel__q">¿Estás 100% segura de que dirás que sí? 👀❤️</h2>
+          <p class="panel__sub">Porque una vez que se dice, no se puede volver atrás...</p>
+          <div class="btns">
+            <button type="button" class="btn btn--yes" id="btnSure">Sí, totalmente ❤️</button>
+            <button type="button" class="btn btn--ghost btn--soft" id="btnThink">Déjame pensarlo</button>
+          </div>
+        </div>
+
+        <!-- PANEL 3: el mensaje final y la fecha -->
+        <div class="panel" data-panel="final">
+          <p class="eyebrow"><span aria-hidden="true">✨</span> Hay planes</p>
+          <h2 class="panel__q">¡Entonces tenemos un café pendiente! ☕❤️</h2>
+          <p class="hero__text" style="max-width:34ch">
+            Tú pones el día y la hora,<br>
+            y vamos a pasar una tarde tomando café juntos. ✨
+          </p>
+          <p class="panel__sub" style="margin-bottom:.4rem">Ahora solo falta elegir cuándo... ☕</p>
+
+          <form class="when" id="formWhen" novalidate>
+            <label class="field">
+              <span>📅 Día</span>
+              <input type="date" id="inpDate" aria-label="Día">
+            </label>
+            <label class="field">
+              <span>🕐 Hora</span>
+              <input type="time" id="inpTime" aria-label="Hora">
+            </label>
+          </form>
+
+          <div class="resumen" id="resumen" hidden aria-live="polite"></div>
+        </div>
+
+        <!-- PANEL 4: el no -->
+        <div class="panel" data-panel="no">
+          <p class="eyebrow"><span aria-hidden="true">🌙</span> está bien</p>
+          <h2 class="panel__q">Está bien ❤️</h2>
+          <p class="hero__text" style="max-width:36ch">
+            Si algún día te provoca tomar un café conmigo,<br>
+            la invitación queda abierta. ☕
+          </p>
+          <div class="btns" style="margin-top:1.4rem">
+            <button type="button" class="btn btn--ghost btn--soft" id="btnBack">Volver a pensarlo</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- SECCIÓN DE CAFÉ ---- -->
+  <section class="section wrap" aria-labelledby="tituloCafe">
+    <h2 class="section__title reveal" id="tituloCafe">Una tarde de café ☕</h2>
+    <p class="section__sub reveal">Lo mínimo para que la conversación empiece</p>
+
+    <div class="grid" id="gridCafe"></div>
+  </section>
+
+  <!-- ---- MÚSICA ---- -->
+  <section class="section wrap--narrow" style="margin-left:auto;margin-right:auto" aria-labelledby="tituloMusica">
+    <div class="card player reveal">
+      <p class="eyebrow"><span aria-hidden="true">🎵</span> la banda sonora</p>
+      <h2 class="section__title" id="tituloMusica" style="margin-top:.9rem">Ponle música al café</h2>
+      <p class="section__sub">Elige tú cuándo empieza a sonar</p>
+      <div class="btns">
+        <button type="button" class="btn btn--soft btn--ghost" id="btnMusica">♪ Activar música</button>
+      </div>
+
+      <div class="spotify" id="spotify">
+        <iframe style="border-radius:12px"
+                src="https://open.spotify.com/embed/track/6IPwKM3fUUzlElbvKw2sKl?utm_source=generator&theme=0"
+                width="100%" height="152" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                title="Reproductor de Spotify" loading="lazy"></iframe>
+      </div>
+      <p class="note" id="musicaHint" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ---- FRASES FLOTANTES ---- -->
+  <div class="whispers wrap reveal" style="--d:.1s">
+    <span class="whisper">☕ Un café</span>
+    <span class="whisper">✨ Una tarde</span>
+    <span class="whisper">❤️ Buena compañía</span>
+    <span class="whisper">🌙 Una bonita conversación</span>
+    <span class="whisper">Para Lia</span>
+  </div>
+
+  <p class="foot">Hecho con cariño para Lia · fotos de <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ==========================================================
+     0. UTILIDADES
+     ========================================================== */
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SMALL   = Math.min(window.innerWidth, window.innerHeight) < 700;
+  var TINY    = window.innerWidth < 420;
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t)  { return a + (b - a) * t; }
+  function rand(a, b)     { return a + Math.random() * (b - a); }
+
+  function isStartKey(e) {
+    var k = e.key || '', c = e.code || '', kc = e.keyCode || e.which || 0;
+    return k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'Space' ||
+      c === 'Enter' || c === 'NumpadEnter' || c === 'Space' ||
+      kc === 13 || kc === 32;
+  }
+
+  var isTouch = window.matchMedia('(hover: none)').matches;
+
+  /* ==========================================================
+     1. FOTOS DE CAFÉ (Unsplash)
+     Se declaran aquí para poder aplicarlas a los <img> por JS.
+     ========================================================== */
+  var U = function (id, w) {
+    return 'https://images.unsplash.com/' + id +
+           '?auto=format&fit=crop&w=' + (w || 900) + '&q=70';
+  };
+  var PHOTOS = {
+    hero:   U('photo-1495474472287-4d71bcdd2085', 1100),
+    cafe1:  U('photo-1554118811-1e0d58224f24'),
+    cafe2:  U('photo-1509042239860-f550ce710b93'),
+    cafe3:  U('photo-1461023058943-07fcbe16d735'),
+    cafe4:  U('photo-1447933601403-0c6688de566e'),
+    float1: U('photo-1514432324607-a09d9b4aefdd', 420),
+    float2: U('photo-1442512595331-e89e73853f31', 420),
+    float3: U('photo-1498804103079-a6351b050096', 420),
+    float4: U('photo-1610889556528-9a770e32642f', 420),
+    float5: U('photo-1521017432531-fbd92d768814', 420)
+  };
+
+  // si una foto no carga, se disimula con un degradado café
+  function fallback(img) {
+    img.style.background =
+      'radial-gradient(circle at 30% 25%, rgba(230,156,87,.35), transparent 60%),' +
+      'linear-gradient(150deg, #3a2318, #17101f)';
+    img.removeAttribute('src');
+  }
+
+  var heroImg = document.getElementById('heroImg');
+  heroImg.addEventListener('error', function () { fallback(heroImg); });
+  heroImg.src = PHOTOS.hero;
+
+  /* tarjetas de la sección "Una tarde de café" */
+  var CAFE = [
+    { img: PHOTOS.cafe1, frase: 'Una buena conversación', nota: 'Donde las frases se estiran' },
+    { img: PHOTOS.cafe2, frase: 'Un café',               nota: 'Con arte de latte, obvio'  },
+    { img: PHOTOS.cafe3, frase: 'Una tarde tranquila',   nota: 'Luz cálida, sillón cómodo' },
+    { img: PHOTOS.cafe4, frase: 'Y buena compañía',     nota: 'Que es lo único importante' }
+  ];
+  var gridCafe = document.getElementById('gridCafe');
+  CAFE.forEach(function (c) {
+    var tile = document.createElement('article');
+    tile.className = 'tile';
+    var img = document.createElement('img');
+    img.className = 'tile__img';
+    img.alt = c.frase;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.addEventListener('error', function () { fallback(img); });
+    img.src = c.img;
+    var body = document.createElement('div');
+    body.className = 'tile__body';
+    var p = document.createElement('p');
+    p.textContent = c.frase;
+    var s = document.createElement('small');
+    s.textContent = c.nota;
+    body.appendChild(p);
+    body.appendChild(s);
+    tile.appendChild(img);
+    tile.appendChild(body);
+    gridCafe.appendChild(tile);
+  });
+
+  /* ==========================================================
+     2. PANTALLA DE INICIO
+     ========================================================== */
+  var splash   = document.getElementById('splash');
+  var started  = false;
+  var revealAt = 0;
+  var stage    = document.getElementById('space');
+  var orbitsLayer = document.getElementById('orbits');
+  var card     = document.getElementById('card');
+
+  function start() {
+    if (started) return;
+    started = true;
+
+    splash.classList.add('is-glow');
+    splash.classList.add('is-burst');
+    unlockAudio();
+
+    window.setTimeout(function () {
+      splash.classList.add('is-leaving');
+      splash.setAttribute('aria-hidden', 'true');
+      splash.setAttribute('role', 'presentation');
+      splash.removeAttribute('tabindex');
+      document.body.classList.add('is-live');
+      revealAt = performance.now();
+      measureCard();
+      if (card && card.focus) { try { card.focus({ preventScroll: true }); } catch (e) {} }
+
+      if (REDUCED) {
+        drawStatic();
+        placeOrbs(revealAt + 4000);
+      } else {
+        startLoop();
+        celebrate(0.6);            // confeti suave de bienvenida
+      }
+    }, REDUCED ? 60 : 520);
+
+    window.setTimeout(function () {
+      if (splash.parentNode) splash.parentNode.removeChild(splash);
+    }, REDUCED ? 420 : 1500);
+  }
+
+  splash.addEventListener('click', start);
+  splash.addEventListener('keydown', function (e) {
+    if (isStartKey(e)) { e.preventDefault(); start(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (started) return;
+    if (isStartKey(e)) { e.preventDefault(); start(); }
+  });
+  // Pointer Events cubren ratón, touch y lápiz
+  splash.addEventListener('pointerdown', function () { start(); });
+
+  /* ==========================================================
+     3. FLUJO DE LA INVITACIÓN (pregunta → sí / no → final)
+     ========================================================== */
+  var PANELS = {
+    pregunta: document.querySelector('[data-panel="pregunta"]'),
+    'dice-si': document.querySelector('[data-panel="dice-si"]'),
+    final:    document.querySelector('[data-panel="final"]'),
+    no:       document.querySelector('[data-panel="no"]')
+  };
+  var btnYes   = document.getElementById('btnYes');
+  var btnSure  = document.getElementById('btnSure');
+  var btnThink = document.getElementById('btnThink');
+  var btnBack  = document.getElementById('btnBack');
+  var btnNo    = document.getElementById('btnNo');
+  var dodgeBox = document.getElementById('dodge');
+  var note     = document.getElementById('notaNo');
+
+  var current = 'pregunta';
+
+  function showPanel(name) {
+    current = name;
+    Object.keys(PANELS).forEach(function (k) {
+      PANELS[k].classList.toggle('is-active', k === name);
+    });
+    // el botón NO vuelve a su sitio cuando se repite la pregunta
+    if (name === 'pregunta') resetDodge();
+    if (card && card.focus) { try { card.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  btnYes.addEventListener('click', function () {
+    celebrate(1.5);
+    playChime(0.5);
+    window.setTimeout(function () { showPanel('dice-si'); }, REDUCED ? 60 : 900);
+  });
+
+  btnSure.addEventListener('click', function () {
+    celebrate(2.4);
+    playChime(0.7);
+    window.setTimeout(function () { showPanel('final'); }, REDUCED ? 60 : 800);
+  });
+
+  btnThink.addEventListener('click', function () { showPanel('pregunta'); });
+  btnBack.addEventListener('click',  function () { showPanel('pregunta'); });
+
+  /* ------------------------------------------------------------
+     El botón NO: se mueve, pero SIEMPRE se puede pulsar.
+     Agota 4 esquivas y después se queda quieto.
+     ------------------------------------------------------------ */
+  var DODGES = 4;
+  var dodgesLeft = DODGES;
+  var NO_TEXTS = [
+    '🙈 NO',
+    '¿Segura? 👀',
+    '¿De verdad? ☕',
+    'Piensa en el café... 😌',
+    'Una tacita solamente ☕'
+  ];
+  var noStep = 0;
+  var dodgeBusy = false;
+
+  // margen máximo de juego: siempre dentro de la tarjeta
+  function noLimits() {
+    var b = dodgeBox.getBoundingClientRect();
+    var p = (dodgeBox.offsetParent || dodgeBox).getBoundingClientRect();
+    return {
+      x: clamp((p.width - b.width) / 2 - 6, 0, 9999),
+      y: clamp((p.height - b.height) / 2 - 6, 0, 9999)
+    };
+  }
+
+  function moveNo() {
+    if (dodgeBusy || dodgesLeft <= 0) return;
+    dodgeBusy = true;
+    dodgesLeft--;
+
+    noStep++;
+    btnNo.textContent = NO_TEXTS[Math.min(noStep, NO_TEXTS.length - 1)];
+
+    var lim = noLimits();
+    var dx = rand(-80, 80);
+    var dy = rand(-32, 32);
+    btnNo.style.transform =
+      'translate(' + clamp(dx, -lim.x, lim.x).toFixed(0) + 'px,' +
+                    clamp(dy, -lim.y, lim.y).toFixed(0) + 'px)';
+
+    note.textContent = dodgesLeft > 0
+      ? 'Le quedan ' + dodgesLeft + (dodgesLeft === 1 ? ' intento' : ' intentos') + ' 😌'
+      : 'Ya no me puedo esquivar... ahora sí puedes pulsarme ☕';
+
+    window.setTimeout(function () { dodgeBusy = false; }, 420);
+  }
+
+  function resetDodge() {
+    dodgesLeft = DODGES;
+    noStep = 0;
+    btnNo.textContent = NO_TEXTS[0];
+    btnNo.style.transform = '';
+    note.textContent = '';
+  }
+
+  /* Al intentar pulsarlo se aparta un poquito y aguanta el clic.
+     Agota los 4 intentos y entonces se queda quieto: SIEMPRE pulsable. */
+  var swallow = false;
+
+  btnNo.addEventListener('pointerdown', function (e) {
+    if (dodgesLeft <= 0 || dodgeBusy) return;
+    swallow = true;
+    moveNo();
+    e.preventDefault();
+    window.setTimeout(function () { swallow = false; }, 500);
+  });
+
+  btnNo.addEventListener('click', function (e) {
+    if (swallow) { swallow = false; return; }                 // era una esquiva
+    if (isTouch && dodgesLeft > 0) { moveNo(); return; }      // en móvil el toque también esquiva
+    showPanel('no');
+  });
+
+  /* ------------------------------------------------------------
+     Fecha y hora (opcionales, solo en el navegador)
+     ------------------------------------------------------------ */
+  var inpDate  = document.getElementById('inpDate');
+  var inpTime  = document.getElementById('inpTime');
+  var resumen  = document.getElementById('resumen');
+
+  var hoy = new Date();
+  var isoHoy = hoy.getFullYear() + '-' +
+               String(hoy.getMonth() + 1).padStart(2, '0') + '-' +
+               String(hoy.getDate()).padStart(2, '0');
+  inpDate.min = isoHoy;                       // no se puede elegir un día pasado
+
+  function fechaBonita(iso) {
+    var p = iso.split('-');
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    var txt = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
+  }
+
+  function pintarResumen() {
+    var f = inpDate.value, h = inpTime.value;
+    if (!f && !h) { resumen.hidden = true; return; }
+
+    var lineas = '<strong>Perfecto ❤️</strong><br>Entonces queda pendiente nuestro café para:';
+    if (f) lineas += '<br>📅 ' + fechaBonita(f);
+    if (h) lineas += '<br>🕐 ' + h;
+    lineas += '<br><br>☕✨';
+    resumen.innerHTML = lineas;
+    resumen.hidden = false;
+  }
+
+  inpDate.addEventListener('input', pintarResumen);
+  inpDate.addEventListener('change', pintarResumen);
+  inpTime.addEventListener('input', pintarResumen);
+  inpTime.addEventListener('change', pintarResumen);
+
+  /* ==========================================================
+     4. MÚSICA (arranque manual, como pide el diseño)
+     Se controla con el postMessage del propio reproductor
+     para no tocar el iframe original.
+     ========================================================== */
+  var spotifyBox   = document.getElementById('spotify');
+  var spotifyFrame = document.querySelector('.spotify iframe');
+  var btnMusica    = document.getElementById('btnMusica');
+  var musicaHint   = document.getElementById('musicaHint');
+
+  var playerReady = false, musicWanted = false, musicHeard = false;
+
+  function toPlayer(command) {
+    if (!spotifyFrame || !spotifyFrame.contentWindow) return false;
+    try {
+      spotifyFrame.contentWindow.postMessage({ command: command }, '*');
+      return true;
+    } catch (e) { return false; }
+  }
+
+  window.addEventListener('message', function (e) {
+    if (!spotifyFrame || e.source !== spotifyFrame.contentWindow) return;
+    var d = e.data;
+    if (!d || !d.type) return;
+
+    if (d.type === 'ready') {
+      playerReady = true;
+      spotifyBox.classList.add('is-ready');
+      if (musicWanted) playMusic();
+    } else if (d.type === 'playback_started' ||
+      (d.type === 'playback_update' && d.payload && d.payload.isPaused === false)) {
+      musicHeard = true;
+      spotifyBox.classList.add('is-ready');
+      btnMusica.textContent = '♪ Música sonando';
+      musicaHint.textContent = 'Si quieres, puedes pausarla desde el reproductor.';
+    } else if (d.type === 'error') {
+      musicaHint.textContent = 'No se pudo cargar el reproductor. Igual el café sigue en pie ☕';
+    }
+  });
+
+  function playMusic() {
+    if (!musicWanted || musicHeard) return;
+    toPlayer('play');
+    window.setTimeout(function () {
+      if (musicWanted && !musicHeard) toPlayer('play_from_start');
+    }, 1200);
+    window.setTimeout(function () {
+      if (!musicHeard) musicaHint.textContent = 'Toca ▶ en el reproductor para empezar a sonar.';
+    }, 2800);
+  }
+
+  btnMusica.addEventListener('click', function () {
+    if (musicHeard) {
+      toPlayer('pause');
+      musicHeard = false;
+      btnMusica.textContent = '♪ Activar música';
+      musicaHint.textContent = '';
+      return;
+    }
+    musicWanted = true;
+    btnMusica.textContent = '♪ Activando...';
+    playMusic();
+    if (!playerReady) {
+      window.setTimeout(function () {
+        if (!playerReady) musicaHint.textContent = 'Cargando el reproductor...';
+      }, 1500);
+    }
+  });
+
+  /* ==========================================================
+     5. SONIDO SINTETIZADO (WebAudio, sin archivos)
+     ========================================================== */
+  var audioCtx = null;
+
+  /* El contexto de audio debe crearse DENTRO de un gesto del usuario,
+     por eso lo preparo al empezar (el toque/click que abre la invitación). */
+  function unlockAudio() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { /* si el navegador no deja sonar, seguimos igual */ }
+  }
+
+  function playChime(vol) {
+    try {
+      unlockAudio();
+      if (!audioCtx) return;
+
+      var t = audioCtx.currentTime;
+      var notas = [523.25, 659.25, 783.99, 1046.5];      // do, mi, sol, do
+      notas.forEach(function (f, i) {
+        var osc = audioCtx.createOscillator();
+        var g   = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = f;
+        var inicio = t + i * 0.11;
+        g.gain.setValueAtTime(0, inicio);
+        g.gain.linearRampToValueAtTime(vol / (i + 1.4), inicio + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, inicio + 0.9);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(inicio);
+        osc.stop(inicio + 0.95);
+      });
+    } catch (e) { /* si el navegador no deja sonar, seguimos igual */ }
+  }
+
+  /* ==========================================================
+     6. CANVAS: ESTRELLAS, NEBULOSAS, LUZ Y PARTÍCULAS
+     ========================================================== */
+  var ctx = stage.getContext('2d', { alpha: false });
+  var W = 0, H = 0, DPR = 1;
+  var cx = 0, cy = 0;
+  var TAU = Math.PI * 2;
+
+  var stars = [];
+  var lights = [];      // luces desenfocadas
+  var dust = [];
+  var floaters = [];    // tazas de café
+  var hearts = [];      // confeti: corazones, tazas, estrellas, oro
+  var backdrop = null;
+
+  var tx = 0, ty = 0, px = 0, py = 0;
+
+  window.addEventListener('pointermove', function (e) {
+    tx = (e.clientX / W - 0.5) * 2;
+    ty = (e.clientY / H - 0.5) * 2;
+  }, { passive: true });
+  window.addEventListener('pointerleave', function () { tx = 0; ty = 0; }, { passive: true });
+
+  var dprCap = Math.min(window.devicePixelRatio || 1, 1.5);
+  var dprFloor = 0.75;
+
+  function layout() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    DPR = Math.max(dprFloor, Math.min(window.devicePixelRatio || 1, dprCap));
+
+    stage.width  = Math.max(1, Math.floor(W * DPR));
+    stage.height = Math.max(1, Math.floor(H * DPR));
+    stage.style.width  = W + 'px';
+    stage.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    cx = W / 2;
+    cy = Math.min(H * 0.42, 380);
+
+    buildStars();
+    buildGlow();
+    buildLights();
+    buildDust();
+    buildFloaters();
+    buildBackdrop();
+    measureCard();
+    drawStatic();
+    placeOrbs(performance.now());
+  }
+
+  /* ---- estrellas con profundidad y curvatura suave hacia el centro ---- */
+  function buildStars() {
+    var n = TINY ? 90 : SMALL ? 150 : 250;
+    var LENS = Math.max(W, H) * 0.62;
+    stars.length = 0;
+    for (var i = 0; i < n; i++) {
+      var x = Math.random() * W;
+      var y = Math.random() * H;
+      var depth = rand(0.35, 1);
+      var r = rand(0.5, 1.5) * (0.7 + depth * 0.6);
+
+      var dx = x - cx, dy = y - cy;
+      var d = Math.hypot(dx, dy) || 1;
+      var f = clamp(1 - d / LENS, 0, 1);
+      var boost = 1;
+      if (f > 0) {
+        var k = 1 + 0.55 * f * f;
+        var a = Math.atan2(dy, dx) + 0.16 * f * f;
+        x = cx + Math.cos(a) * d * k;
+        y = cy + Math.sin(a) * d * k;
+        boost = 1 + 1.6 * f * f;
+      }
+
+      stars.push({
+        x: x, y: y, r: r, depth: depth, boost: boost,
+        a: rand(0.25, 0.9),
+        tw: rand(0, TAU),
+        tws: rand(0.0006, 0.0022),
+        warm: Math.random() < 0.26
+      });
+    }
+  }
+
+  /* ---- luces cálidas desenfocadas (sprite pre-renderizado) ---- */
+  var glowWarm = null, glowViolet = null;
+
+  function buildGlow() {
+    if (glowWarm) return;
+    function make(color) {
+      var c = document.createElement('canvas');
+      c.width = c.height = 128;
+      var g2 = c.getContext('2d');
+      var g = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0,   color);
+      g.addColorStop(0.4, color.replace(/[\d.]+\)$/, '0.12)'));
+      g.addColorStop(1,   'rgba(0,0,0,0)');
+      g2.fillStyle = g;
+      g2.fillRect(0, 0, 128, 128);
+      return c;
+    }
+    glowWarm   = make('rgba(255,214,160,0.85)');
+    glowViolet = make('rgba(214,180,255,0.85)');
+  }
+
+  function buildLights() {
+    var n = TINY ? 5 : SMALL ? 8 : 12;
+    lights.length = 0;
+    for (var i = 0; i < n; i++) {
+      lights.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: rand(50, 150),
+        a: rand(0.18, 0.42),
+        ph: rand(0, TAU),
+        sp: rand(0.0002, 0.0006),
+        warm: Math.random() < 0.6
+      });
+    }
+  }
+
+  /* ---- polvo de partículas ---- */
+  function buildDust() {
+    var n = TINY ? 34 : SMALL ? 60 : 110;
+    dust.length = 0;
+    for (var i = 0; i < n; i++) {
+      dust.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        s: rand(0.6, 2.1),
+        a: rand(0.12, 0.5),
+        vx: rand(-0.012, 0.012),
+        vy: rand(-0.02, -0.004),
+        ph: rand(0, TAU),
+        warm: Math.random() < 0.55
+      });
+    }
+  }
+
+  /* ---- tazas de café flotando (se dibujan en el canvas) ---- */
+  function buildFloaters() {
+    var n = TINY ? 6 : SMALL ? 9 : 13;
+    floaters.length = 0;
+    for (var i = 0; i < n; i++) {
+      var big = i === 0;
+      floaters.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        bs: big ? (TINY ? 52 : 68) : rand(24, 40),   // tamaño base
+        sp: rand(0.004, 0.013) * (Math.random() < 0.5 ? -1 : 1),
+        ph: rand(0, TAU),
+        amp: rand(12, 40),
+        spin: rand(-0.0004, 0.0004),
+        rot: rand(0, TAU),
+        a: rand(0.28, 0.72),
+        depth: rand(0.4, 1)
+      });
+    }
+  }
+
+  /* ---- fondo pre-renderizado: nebulosas + viñeta ---- */
+  function buildBackdrop() {
+    backdrop = document.createElement('canvas');
+    backdrop.width  = Math.max(1, Math.floor(W / 2));
+    backdrop.height = Math.max(1, Math.floor(H / 2));
+    var n = backdrop.getContext('2d');
+    var w = backdrop.width, h = backdrop.height;
+    n.clearRect(0, 0, w, h);
+
+    var blobs = [
+      [0.5,  0.34, 0.55, 'rgba(107,62,38,0.34)'],
+      [0.16, 0.72, 0.50, 'rgba(42,27,54,0.55)'],
+      [0.85, 0.18, 0.46, 'rgba(38,59,92,0.26)'],
+      [0.62, 0.84, 0.42, 'rgba(23,17,30,0.6)'],
+      [0.30, 0.10, 0.40, 'rgba(226,117,138,0.08)']
+    ];
+    for (var i = 0; i < blobs.length; i++) {
+      var b = blobs[i];
+      var x = b[0] * w, y = b[1] * h, r = b[2] * Math.max(w, h);
+      var g = n.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, b[3]);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      n.fillStyle = g;
+      n.fillRect(0, 0, w, h);
+    }
+
+    var vg = n.createRadialGradient(w / 2, h * 0.42, 0, w / 2, h * 0.42, Math.max(w, h) * 0.8);
+    vg.addColorStop(0,    'rgba(0,0,0,0)');
+    vg.addColorStop(0.62, 'rgba(0,0,0,0.3)');
+    vg.addColorStop(1,    'rgba(0,0,0,0.88)');
+    n.fillStyle = vg;
+    n.fillRect(0, 0, w, h);
+  }
+
+  /* ==========================================================
+     7. DIBUJO
+     ========================================================== */
+  function drawSpace(t) {
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, W, H);
+
+    if (backdrop) {
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(backdrop, 0, 0, W, H);
+    }
+
+    drawLights(t);
+    drawStars(t);
+    drawDust(t);
+    drawFloaters(t);
+    drawHearts(t);
+  }
+
+  function drawLights(t) {
+    if (!glowWarm) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (var i = 0; i < lights.length; i++) {
+      var l = lights[i];
+      var yy = l.y + Math.sin(t * l.sp + l.ph) * 18;
+      var xx = l.x + px * 12;
+      var a = l.a * (0.7 + 0.3 * Math.sin(t * 0.0006 + l.ph));
+      ctx.globalAlpha = clamp(a, 0, 1);
+      var sp = l.warm ? glowWarm : glowViolet;
+      ctx.drawImage(sp, xx - l.r, yy - l.r, l.r * 2, l.r * 2);
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawStars(t) {
+    ctx.globalCompositeOperation = 'source-over';
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var x = s.x + px * s.depth * 12;
+      var y = s.y + py * s.depth * 12;
+      var tw = 0.62 + 0.38 * Math.sin(t * s.tws + s.tw);
+      var alpha = clamp(s.a * s.boost * tw, 0, 1);
+      if (alpha <= 0.02) continue;
+
+      if (s.r > 1.15) {
+        ctx.fillStyle = s.warm ? 'rgba(255,214,160,' + alpha.toFixed(3) + ')'
+                               : 'rgba(255,244,228,' + alpha.toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(x, y, s.r, 0, TAU);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = s.warm ? 'rgba(255,214,160,' + (alpha * 0.8).toFixed(3) + ')'
+                               : 'rgba(232,240,255,' + alpha.toFixed(3) + ')';
+        ctx.fillRect(x, y, s.r, s.r);
+      }
+    }
+  }
+
+  function drawDust(t) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (var i = 0; i < dust.length; i++) {
+      var d = dust[i];
+      var x = d.x + Math.sin(t * 0.0004 + d.ph) * 22 + px * d.vx * 60;
+      var y = d.y + Math.cos(t * 0.0005 + d.ph) * 18 + py * d.vy * 60;
+      var a = d.a * (0.65 + 0.35 * Math.sin(t * 0.001 + d.ph));
+      ctx.fillStyle = d.warm ? 'rgba(255,214,160,' + clamp(a, 0, 1).toFixed(3) + ')'
+                             : 'rgba(226,190,255,' + clamp(a, 0, 1).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(x, y, d.s, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- tazas de café flotando en el canvas ---- */
+  function drawFloaters(t) {
+    ctx.save();
+    for (var i = 0; i < floaters.length; i++) {
+      var f = floaters[i];
+      // sube y baja, gira y reaparece por abajo cuando sale
+      f.y += f.sp;
+      if (f.y < -120) { f.y = H + 120; f.x = Math.random() * W; }
+      if (f.y > H + 120) { f.y = -120; f.x = Math.random() * W; }
+      f.rot += f.spin;
+
+      var size = f.bs * (0.75 + 0.25 * Math.sin(t * 0.0007 + f.ph));
+      var x = f.x + px * (18 * f.depth) + Math.sin(t * 0.0003 + f.ph) * f.amp * 0.4;
+      var y = f.y + py * (14 * f.depth);
+
+      ctx.save();
+      ctx.globalAlpha = clamp(f.a * (0.8 + 0.2 * Math.sin(t * 0.0009 + f.ph)), 0, 1);
+      ctx.translate(x, y);
+      ctx.rotate(f.rot);
+      ctx.font = Math.round(size) + 'px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('☕', 0, 0);
+      ctx.restore();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- confeti: corazones, tazas, estrellas y oro ---- */
+  function celebrate(mult) {
+    if (REDUCED) return;
+    var base = Math.round((TINY ? 26 : SMALL ? 40 : 60) * (mult || 1));
+    var kinds = ['heart', 'cup', 'star', 'gold'];
+    for (var i = 0; i < base; i++) {
+      var fromLeft = i % 2 === 0;
+      hearts.push({
+        x: fromLeft ? rand(-40, W * 0.22) : rand(W * 0.78, W + 40),
+        y: rand(H * 0.55, H + 60),
+        vx: rand(-1.1, 1.1),
+        vy: rand(-7.5, -3.4),
+        g: 0.055,
+        r: rand(9, 22),
+        rot: rand(0, TAU),
+        vr: rand(-0.13, 0.13),
+        kind: kinds[i % kinds.length],
+        life: rand(0.9, 1)
+      });
+    }
+    if (hearts.length > 260) hearts.splice(0, hearts.length - 260);
+  }
+
+  function drawHearts(t) {
+    if (!hearts.length) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (var i = hearts.length - 1; i >= 0; i--) {
+      var h = hearts[i];
+      h.x += h.vx;
+      h.y += h.vy;
+      h.vy += h.g;
+      h.vx += Math.sin(t * 0.002 + h.rot) * 0.05;
+      h.rot += h.vr;
+      h.life -= 0.0042;
+      if (h.life <= 0 || h.y > H + 80) { hearts.splice(i, 1); continue; }
+
+      ctx.save();
+      ctx.globalAlpha = clamp(h.life, 0, 1);
+      ctx.translate(h.x, h.y);
+      ctx.rotate(h.rot);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = Math.round(h.r * 1.8) + 'px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+      ctx.fillStyle = '#fff';
+      if (h.kind === 'heart')      ctx.fillText('❤️', 0, 0);
+      else if (h.kind === 'cup')   ctx.fillText('☕', 0, 0);
+      else if (h.kind === 'star')  ctx.fillText('✨', 0, 0);
+      else                         ctx.fillText('·', 0, 0);
+      ctx.restore();
+
+      if (h.kind === 'gold') {
+        ctx.fillStyle = 'rgba(243,201,143,' + (clamp(h.life, 0, 1) * 0.9).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r * 0.32, 0, TAU);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+  }
+
+  /* ==========================================================
+     8. FRASES Y FOTOS FLOTANTES (DOM)
+     ========================================================== */
+  var PHRASES = [
+    { text: '☕ Un café',            rx: 0.46, ry: 0.30, w:  0.00017, ph: 0.6 },
+    { text: '✨ Una tarde',          rx: 0.54, ry: 0.44, w: -0.00012, ph: 2.4 },
+    { text: '❤️ Buena compañía',     rx: 0.42, ry: 0.56, w:  0.00021, ph: 3.9 },
+    { text: '🌙 Una bonita conversación', rx: 0.56, ry: 0.62, w: -0.00015, ph: 5.2 },
+    { text: 'Para Lia',             rx: 0.48, ry: 0.72, w:  0.00010, ph: 1.3 }
+  ];
+  var PHOTOS_Float = [
+    { src: PHOTOS.float1, rx: 0.40, ry: 0.26, w:  0.00014, ph: 0.9 },
+    { src: PHOTOS.float2, rx: 0.60, ry: 0.34, w: -0.00011, ph: 3.1 },
+    { src: PHOTOS.float3, rx: 0.37, ry: 0.66, w:  0.00013, ph: 4.4 },
+    { src: PHOTOS.float4, rx: 0.63, ry: 0.70, w: -0.00009, ph: 1.9 },
+    { src: PHOTOS.float5, rx: 0.50, ry: 0.14, w:  0.00008, ph: 5.6 }
+  ];
+
+  var orbs = [];
+
+  function createOrbs() {
+    orbitsLayer.innerHTML = '';
+    orbs.length = 0;
+
+    PHRASES.forEach(function (p) {
+      var el = document.createElement('div');
+      el.className = 'orb orb--phrase';
+      var span = document.createElement('span');
+      span.textContent = p.text;
+      el.appendChild(span);
+      orbitsLayer.appendChild(el);
+      orbs.push({ el: el, cfg: p, kind: 'phrase' });
+    });
+
+    PHOTOS_Float.forEach(function (g) {
+      var el = document.createElement('div');
+      el.className = 'orb orb--photo';
+      var img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.addEventListener('error', function () { fallback(img); el.style.display = 'none'; });
+      img.src = g.src;
+      el.appendChild(img);
+      orbitsLayer.appendChild(el);
+      orbs.push({ el: el, cfg: g, kind: 'photo' });
+    });
+  }
+
+  var cardRect = { l: 0, t: 0, r: 0, b: 0 };
+  function measureCard() {
+    if (!card) return;
+    var r = card.getBoundingClientRect();
+    cardRect = { l: r.left - 10, t: r.top - 10, r: r.right + 10, b: r.bottom + 10 };
+  }
+
+  function placeOrbs(t) {
+    var scale = W < 640 ? 0.78 : 1;
+    var fade = started ? clamp((t - revealAt) / (REDUCED ? 1 : 1400), 0, 1) : 0;
+    for (var i = 0; i < orbs.length; i++) {
+      var o = orbs[i];
+      var c = o.cfg;
+      var a = c.ph + t * c.w;
+      var rx = c.rx * W * scale;
+      var ry = c.ry * H;
+      var depth = (Math.sin(a) + 1) / 2;
+      var x = cx + Math.cos(a) * rx + px * (10 + depth * 20);
+      var y = cy + Math.sin(a) * ry + py * (8 + depth * 14);
+      var s = (0.82 + depth * 0.26);
+      o.el.style.transform =
+        'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + s.toFixed(3) + ')';
+
+      // no estorba la lectura: se atenúa detrás de la tarjeta
+      var behind = 1;
+      if (x > cardRect.l && x < cardRect.r && y > cardRect.t && y < cardRect.b) behind = 0.2;
+      o.el.style.opacity = ((0.22 + depth * 0.62) * behind * fade).toFixed(3);
+    }
+  }
+
+  /* ==========================================================
+     9. BUCLE PRINCIPAL
+     ========================================================== */
+  var raf = 0, prev = 0, running = false;
+  var ema = 16, slowFrames = 0;
+
+  function startLoop() {
+    if (running) return;
+    running = true;
+    prev = performance.now();
+    raf = window.requestAnimationFrame(loop);
+  }
+
+  function loop(now) {
+    raf = window.requestAnimationFrame(loop);
+    if (document.hidden) { prev = now; return; }
+    var dt = Math.min(now - prev, 60) || 16;
+    prev = now;
+
+    px = lerp(px, tx, 0.045);
+    py = lerp(py, ty, 0.045);
+    if (!isTouch) {
+      tx = lerp(tx, 0, 0.0015);
+      ty = lerp(ty, 0, 0.0015);
+    }
+
+    drawSpace(now);
+    placeOrbs(now);
+
+    // calidad adaptativa
+    ema += (dt - ema) * 0.08;
+    if (ema > 30) slowFrames++; else if (ema < 22) slowFrames = 0;
+    if (slowFrames > 50 && dprCap > 0.8) {
+      slowFrames = 0;
+      dprCap = dprCap > 1 ? 1 : 0.75;
+      layout();
+    }
+  }
+
+  function drawStatic() {
+    drawSpace(0);
+    placeOrbs(0);
+  }
+
+  /* ==========================================================
+     10. REVELADO AL HACER SCROLL
+     ========================================================== */
+  var observer = null;
+  if ('IntersectionObserver' in window) {
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tile'), function (el) {
+      observer.observe(el);
+    });
+  } else {
+    Array.prototype.forEach.call(document.querySelectorAll('.tile'), function (el) {
+      el.classList.add('is-in');
+    });
+  }
+
+  /* ==========================================================
+     11. ARRANQUE
+     ========================================================== */
+
+  /* Envoltorio mínimo para depuración y pruebas automáticas */
+  window.__cafe = {
+    version: '1.0.0',
+    started:  function () { return started; },
+    reduced:  function () { return REDUCED; },
+    tiny:     function () { return TINY; },
+    small:    function () { return SMALL; },
+    panel:    function () { return current; },
+    dodges:   function () { return dodgesLeft; },
+    floaters: function () { return floaters.length; },
+    musicOn:  function () { return musicWanted; },
+    start:    start
+  };
+
+  createOrbs();
+  layout();
+
+  window.addEventListener('resize', function () {
+    SMALL = Math.min(window.innerWidth, window.innerHeight) < 700;
+    TINY  = window.innerWidth < 420;
+    layout();
+  }, { passive: true });
+
+  window.addEventListener('orientationchange', function () {
+    window.setTimeout(layout, 220);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

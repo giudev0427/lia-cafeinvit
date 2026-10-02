@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Taza de café">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="52%">
+      <stop offset="0%" stop-color="#f3c98f" stop-opacity=".55"/>
+      <stop offset="60%" stop-color="#e69c57" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#e69c57" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cup" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8ee"/>
+      <stop offset="55%" stop-color="#e9c79c"/>
+      <stop offset="100%" stop-color="#b8834f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" fill="#000"/>
+  <circle cx="32" cy="32" r="26" fill="url(#glow)"/>
+
+  <!-- asas -->
+  <path d="M45 26h4a7 7 0 0 1 0 14h-4" fill="none" stroke="#e9c79c" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M19 26h-4a7 7 0 0 0 0 14h4" fill="none" stroke="#e9c79c" stroke-width="3.4" stroke-linecap="round"/>
+
+  <!-- taza -->
+  <path d="M14 23h36v12a16 16 0 0 1-16 16h-4A16 16 0 0 1 14 35z" fill="url(#cup)"/>
+  <ellipse cx="32" cy="23" rx="18" ry="5.2" fill="#6b3e26"/>
+  <ellipse cx="32" cy="22.4" rx="15" ry="3.6" fill="#3a2015" opacity=".65"/>
+
+  <!-- vapor -->
+  <g fill="none" stroke="#fff4e4" stroke-width="2.4" stroke-linecap="round" opacity=".55">
+    <path d="M26 15c-3-3 3-5 0-8"/>
+    <path d="M32 14c-3-3 3-5 0-8"/>
+    <path d="M38 15c-3-3 3-5 0-8"/>
+  </g>
+</svg>
