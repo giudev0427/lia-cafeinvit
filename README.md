@@ -17,7 +17,9 @@ con estrellas, una pregunta muy importante y dos botones... uno de los cuales in
   totalmente autónomo.
 
 Todo funciona **solo en el navegador**: no hay backend, ni base de datos, ni builds.
-La fecha y la hora que se eligen **no se envían a ningún servidor**.
+La fecha y la hora se muestran en pantalla y, si Lia pulsa **"✉️ Enviar mi respuesta"**,
+se abren en su propio programa de correo ya rellenado (ver
+[Cómo recibes las respuestas](#-cómo-recibes-las-respuestas)). Nada se almacena en un servidor.
 
 ---
 
@@ -35,10 +37,42 @@ La fecha y la hora que se eligen **no se envían a ningún servidor**.
 - Botón **SÍ** con confeti de corazones, tazas y estrellas
 - Aviso de confirmación: "¿Estás 100% segura...?"
 - Pantalla final con selección **opcional** de día y hora
+- Botón **"✉️ Enviar mi respuesta"**: abre el correo de Lia con la respuesta ya escrita
 - Reproductor de Spotify con arranque **manual**
 - Diseño responsive (320px → 1440px)
 - Respeta `prefers-reduced-motion`
 - Sin errores en consola
+
+---
+
+## 📬 Cómo recibes las respuestas
+
+No hay servidor: cuando Lia elige el día y la hora aparece un botón
+**"✉️ Enviar mi respuesta"** que abre su programa de correo con un mensaje ya escrito.
+
+```
+mailto:giudev0427@gmail.com?subject=☕ ¡He aceptado el café!&body=...
+```
+
+El enlace se reconstruye cada vez que cambia la fecha o la hora, así que también
+puedes copiarlo con el botón derecho si su programa de correo no se abre solo.
+
+El mensaje que llega es:
+
+```
+¡He aceptado la invitación del café! ☕❤️
+
+Día:  Jueves, 15 de octubre
+Hora: 19:45
+
+Enviado desde la invitación ☕
+```
+
+> **Para cambiar el destinatario:** busca `MAIL_DESTINO` en `index.html` y edita
+> la dirección de correo.
+
+**Nota:** la fecha y la hora se mantienen solo en el navegador hasta que ella pulse
+el botón. Si cierra la página antes, la elección se pierde (no hay almacenamiento).
 
 ---
 
